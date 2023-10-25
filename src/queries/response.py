@@ -18,7 +18,7 @@ async def create(db: AsyncSession, response: ResponseSchema) -> Response:
     return new_response
 
 
-async def get_response_by_user_id(db: AsyncSession, job_id: int) -> List[Response]:
+async def get_by_user_id(db: AsyncSession, job_id: int) -> List[Response]:
     request = select(Response).where(Response.user_id == job_id)
     result = await db.execute(request)
     list_of_jobs = result.fetchall()

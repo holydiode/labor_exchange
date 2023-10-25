@@ -22,7 +22,7 @@ async def read_jobs(
 
 
 @router.get("/{job_id}", response_model=JobSchema)
-async def read_jobs(job_id: int, db: AsyncSession = Depends(get_db)):
+async def read_job(job_id: int, db: AsyncSession = Depends(get_db)):
     job = await job_queries.get_by_id(db=db, job_id=job_id)
     return job
 
@@ -31,10 +31,8 @@ async def read_jobs(job_id: int, db: AsyncSession = Depends(get_db)):
 async def create_job(job_schema: JobInputSchema,
                      db: AsyncSession = Depends(get_db),
                      current_user: User = Depends(get_current_user)):
-
     job = await create_job_by_user(db=db, job=job_schema, current_user=current_user)
     return job
-
 
 
 @router.post("/response", response_model=ResponseSchema)
@@ -44,4 +42,3 @@ async def response(
         current_user: User = Depends(get_current_user)):
     new_response = await response_job(db, job_id, current_user)
     return new_response
-
