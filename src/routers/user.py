@@ -5,7 +5,7 @@ from dependencies import get_db, get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
 from queries import user as user_queries
 from models import User
-from queries import response as response_request
+from services.responseService import get_all_accessible_response_of_user
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -44,6 +44,9 @@ async def update_user(
 
 
 @router.get("/{user_id}/responses", response_model=List[ResponseSchema])
-async def get_responses(user_id: int, db: AsyncSession = Depends(get_db)):
-    responses = await response_request.get_response_by_user_id(db, user_id)
+async def get_responses(
+        user_id: int,
+        db: AsyncSession = Depends(get_db),
+        current_user: User = Depends(get_current_user)):
+    responses = await get_all_accessible_response_of_user(db, user_id, current_user)
     return responses
