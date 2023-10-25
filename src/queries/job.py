@@ -32,8 +32,8 @@ async def get_all_jobs(db: AsyncSession, limit: int = 100, skip: int = 0) -> Lis
     return list_of_jobs
 
 
-async def get_job_by_id(db: AsyncSession, job_id: str) -> JobSchema:
-    request = select(Job).where(Job.id == int(job_id))
+async def get_job_by_id(db: AsyncSession, job_id: int) -> JobSchema:
+    request = select(Job).where(Job.id == job_id)
     result = await db.execute(request)
     job = result.scalars().first()
     if job is None:
