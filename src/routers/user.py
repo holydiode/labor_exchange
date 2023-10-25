@@ -44,6 +44,6 @@ async def update_user(
 
 
 @router.get("/{user_id}/responses", response_model=List[ResponseSchema])
-async def get_responses(user_id, db: AsyncSession = Depends(get_db)):
+async def get_responses(user_id: int, db: AsyncSession = Depends(get_db)):
     responses = await response_request.get_response_by_user_id(db, user_id)
     return responses
