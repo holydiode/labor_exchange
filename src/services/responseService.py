@@ -1,20 +1,20 @@
-import queries.response
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
-from dependencies import get_current_user
-from models import Job, Response, User
-from queries.job import get_job_by_id
-from services.errors import UserPermissionError, InteractionWithInactiveObject
+import queries.response
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from models import  Response, User
+from queries.job import get_by_id
 from schemas import ResponseSchema
 
 
-async def response_job(db: AsyncSession, job_id: int, current_user: User):
-    job = await get_job_by_id(db, job_id)
+async def response_job(db: AsyncSession, job_id: int, current_user: User) -> Response:
+    job = await get_by_id(db, job_id)
 
     if current_user.is_company:
-        raise UserPermissionError("Company can't response")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="user can't create job")
     if not job.is_active:
-        raise InteractionWithInactiveObject("job is inactive")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="object not found or disable")
 
-    await queries.response.create(db, ResponseSchema(job_id=job.id, user_id=current_user.id, message=""))
+    response = await queries.response.create(db, ResponseSchema(job_id=job.id, user_id=current_user.id, message=""))
+    return response

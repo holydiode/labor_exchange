@@ -1,17 +1,17 @@
 from datetime import datetime
 
+from fastapi import HTTPException
 from sqlalchemy_mock import AsyncSession
+from starlette import status
 
 from models import User, Job
 from schemas import JobInputSchema, JobSchema
-from services.errors import UserPermissionError
 import queries.job as job_query
 
 
 async def create_job_by_user(db: AsyncSession, job: JobInputSchema, current_user: User) -> Job:
     if not current_user.is_company:
-        raise UserPermissionError("only company able to create job")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="user can't create job")
 
     new_job = JobSchema(**job.dict(), user_id=current_user.id, created_at=datetime.utcnow())
-
-    return await job_query.create_job(db=db, job_schema=new_job)
+    return await job_query.create(db=db, job_schema=new_job)
