@@ -25,7 +25,7 @@ async def create(db: AsyncSession, job_schema: JobSchema):
 async def get_all(db: AsyncSession, limit: int = 100, skip: int = 0) -> List[Job]:
     request = select(Job).limit(limit).offset(skip)
     result = await db.execute(request)
-    list_of_jobs = result.fetchall()
+    list_of_jobs = result.scalars().all()
     return list_of_jobs
 
 
