@@ -5,7 +5,7 @@ from dependencies import get_db, get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
 from queries import user as user_queries
 from models import User
-from services.responseService import get_all_accessible_response_of_user
+from serivces import get_all_accessible_response_of_user
 
 router = APIRouter(prefix="/users", tags=["users"])
 

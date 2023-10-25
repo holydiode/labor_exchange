@@ -1,8 +1,8 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from services.responseService import response_job
-from services.jobService import create_job_by_user
+from fastapi import APIRouter, Depends
+from serivces import response_job
+from serivces import create_job_by_user
 from schemas import JobSchema, JobInputSchema, ResponseSchema
 from dependencies import get_db, get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
