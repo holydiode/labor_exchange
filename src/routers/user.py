@@ -21,7 +21,7 @@ async def read_users(
 @router.post("", response_model=UserSchema)
 async def create_user(user: UserInSchema, db: AsyncSession = Depends(get_db)):
     user = await user_queries.create(db=db, user_schema=user)
-    return UserSchema.from_orm(user)
+    return user
 
 
 @router.put("", response_model=UserSchema)
@@ -40,7 +40,7 @@ async def update_user(
 
     new_user = await user_queries.update(db=db, user=old_user)
 
-    return UserSchema.from_orm(new_user)
+    return new_user
 
 
 @router.get("/{user_id}/responses", response_model=List[ResponseSchema])
