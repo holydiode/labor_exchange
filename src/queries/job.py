@@ -1,15 +1,12 @@
 from typing import List
 
-from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy_mock import AsyncSession
-from starlette import status
-
 from models import Job
 from schemas.job import JobSchema
 
 
-async def create_job(db: AsyncSession, job_schema: JobSchema):
+async def create(db: AsyncSession, job_schema: JobSchema):
     new_job = Job(
         user_id=job_schema.user_id,
         title=job_schema.title,
@@ -25,17 +22,15 @@ async def create_job(db: AsyncSession, job_schema: JobSchema):
     return new_job
 
 
-async def get_all_jobs(db: AsyncSession, limit: int = 100, skip: int = 0) -> List[Job]:
+async def get_all(db: AsyncSession, limit: int = 100, skip: int = 0) -> List[Job]:
     request = select(Job).limit(limit).offset(skip)
     result = await db.execute(request)
     list_of_jobs = result.fetchall()
     return list_of_jobs
 
 
-async def get_job_by_id(db: AsyncSession, job_id: int) -> JobSchema:
+async def get_by_id(db: AsyncSession, job_id: int) -> JobSchema:
     request = select(Job).where(Job.id == job_id)
     result = await db.execute(request)
     job = result.scalars().first()
-    if job is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="job not found")
     return job
