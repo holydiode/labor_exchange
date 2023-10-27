@@ -16,7 +16,7 @@ async def response_job(db: AsyncSession, job_id: int, current_user: User) -> Res
 
     if current_user.is_company:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="user can't create job")
-    if not job.is_active:
+    if job is None or not job.is_active:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="object not found or disable")
 
     response = await queries.response.create(db, ResponseSchema(job_id=job.id, user_id=current_user.id, message=""))

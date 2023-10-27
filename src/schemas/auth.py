@@ -4,9 +4,13 @@ from pydantic import BaseModel, EmailStr, Field
 
 class TokenSchema(BaseModel):
     """Схема возврата токена пользователю"""
-    access_token: str = Field(description="токен")
+    token: str = Field(description="токен")
     token_type: str = Field(description="тип токена")
 
+class PairTokenSchema(BaseModel):
+    """Схема получения пары токенов (access, refresh) при авторизации"""
+    access_token: TokenSchema = Field(description="токен доступа")
+    refresh_token: TokenSchema = Field(description="токен обновления")
 
 class LoginSchema(BaseModel):
     """Схема авторизации по email и паролю"""
