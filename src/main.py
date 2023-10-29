@@ -7,6 +7,7 @@ app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(job_router)
 
+
 @app.get("/")
 def hello():
     return {"message": "Hello, world!"}

@@ -35,7 +35,7 @@ async def create_job(job_schema: JobInputSchema,
     return job
 
 
-@router.post("/response", response_model=ResponseSchema)
+@router.post("{job_id}/response", response_model=ResponseSchema)
 async def response(
         job_id: int,
         db: AsyncSession = Depends(get_db),

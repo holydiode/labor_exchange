@@ -25,6 +25,7 @@ async def login(login: LoginSchema, db: AsyncSession = Depends(get_db)):
         refresh_token=TokenGenerator.create_refresh_token({"sub": user.email}),
     )
 
+
 @router.post("/refresh", response_model=PairTokenSchema)
 async def auth_with_refresh_token(current_user: User = Depends(refresh_user)):
     return PairTokenSchema(
