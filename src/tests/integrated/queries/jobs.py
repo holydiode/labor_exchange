@@ -1,6 +1,6 @@
 import pytest
 from sqlalchemy import select
-
+from dependencies import get_current_user
 from queries import job as job_query
 from fixtures.users import UserFactory
 from models import Job
