@@ -1,6 +1,8 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from starlette import status
+
 from serivces import response_job
 from serivces import create_job_by_user
 from schemas import JobSchema, JobInputSchema, ResponseSchema
@@ -24,6 +26,8 @@ async def read_jobs(
 @router.get("/{job_id}", response_model=JobSchema)
 async def read_job(job_id: int, db: AsyncSession = Depends(get_db)):
     job = await job_queries.get_by_id(db=db, job_id=job_id)
+    if job is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Вакансия не найдена")
     return job
 
 
@@ -35,7 +39,7 @@ async def create_job(job_schema: JobInputSchema,
     return job
 
 
-@router.post("{job_id}/response", response_model=ResponseSchema)
+@router.post("/{job_id}/response", response_model=ResponseSchema)
 async def response(
         job_id: int,
         db: AsyncSession = Depends(get_db),

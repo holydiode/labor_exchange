@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dependencies.user import refresh_user
+from dependencies.user import get_refreshed_user
 from models import User
 from queries import user as user_queries
 
@@ -27,7 +27,7 @@ async def login(login: LoginSchema, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/refresh", response_model=PairTokenSchema)
-async def auth_with_refresh_token(current_user: User = Depends(refresh_user)):
+async def auth_with_refresh_token(current_user: User = Depends(get_refreshed_user)):
     return PairTokenSchema(
         access_token=TokenGenerator.create_access_token({"sub": current_user.email}),
         refresh_token=TokenGenerator.create_refresh_token({"sub": current_user.email}),
