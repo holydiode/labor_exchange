@@ -26,8 +26,7 @@ async def response_job(db: AsyncSession, job_id: int, current_user: User) -> Res
 async def get_all_accessible_response_of_user(db: AsyncSession, user_id: int, current_user: User) -> List[Response]:
     if not current_user.is_company and user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="user can get only onw response")
-    responses = await response_query.get_response_by_user_id(db, user_id)
+    responses = await response_query.get_by_user_id(db, user_id)
     if current_user.is_company:
-        responses = list(filter(lambda response: response.job_id == user_id, responses))
-
+        responses = [response for response in responses if response.job.user_id == current_user.id]
     return responses
