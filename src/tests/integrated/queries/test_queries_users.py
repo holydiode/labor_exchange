@@ -1,4 +1,6 @@
 import pytest
+
+from fixtures.jobs import JobFactory
 from queries import user as user_query
 from fixtures.users import UserFactory
 from schemas import UserInSchema

@@ -1,5 +1,7 @@
 import pytest
 from sqlalchemy import select
+
+from fixtures.jobs import JobFactory
 from queries import job as job_query
 from fixtures.users import UserFactory
 from models import Job
@@ -14,9 +16,7 @@ async def test_get_all_with_empty(sa_session):
 
 @pytest.mark.asyncio
 async def test_get_all(sa_session):
-    user = UserFactory.build()
-    sa_session.add(user)
-    job = Job(**JobSchema(user_id=user.id).model_dump())
+    job = JobFactory.build()
     sa_session.add(job)
     sa_session.flush()
     jobs = await job_query.get_all(sa_session)
@@ -28,15 +28,12 @@ async def test_get_all(sa_session):
 
 @pytest.mark.asyncio
 async def test_get_by_id(sa_session):
-    user = UserFactory.build()
-    sa_session.add(user)
-    job = Job(**JobSchema(user_id=user.id).model_dump())
+    job = JobFactory.build()
     sa_session.add(job)
     sa_session.flush()
 
     request = select(Job).limit(1)
-    result = await sa_session.execute(request)
-    bd_job = result.scalars().first()
+    bd_job = await sa_session.scalar(request)
 
     find_job = await job_query.get_by_id(sa_session, bd_job.id)
     assert find_job

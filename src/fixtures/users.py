@@ -14,3 +14,4 @@ class UserFactory(AsyncSQLAlchemyModelFactory):
     hashed_password = factory.Faker("password")
     is_company = factory.Faker("pybool")
     created_at = factory.LazyFunction(datetime.utcnow)
+    

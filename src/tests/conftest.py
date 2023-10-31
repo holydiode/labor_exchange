@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker
 
 from core import TokenGenerator
 from dependencies import get_db
+from fixtures.jobs import JobFactory
+from fixtures.responces import ResponseFactory
 from fixtures.users import UserFactory
 from main import app
 import pytest_asyncio
@@ -51,6 +53,9 @@ async def client_app(sa_session: AsyncSession) -> AsyncClient:
 @pytest_asyncio.fixture(autouse=True)
 def setup_factories(sa_session: AsyncSession) -> None:
     UserFactory.session = sa_session
+    JobFactory.session = sa_session
+    ResponseFactory.session = sa_session
+
 
 
 @pytest_asyncio.fixture()
