@@ -1,37 +1,35 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
-from schemas import UserSchema, UserInSchema, UserUpdateSchema
+from schemas import UserSchema, UserInSchema, UserUpdateSchema, ResponseSchema
 from dependencies import get_db, get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
 from queries import user as user_queries
 from models import User
-
+from serivces import get_all_accessible_response_of_user
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("", response_model=List[UserSchema])
 async def read_users(
-    db: AsyncSession = Depends(get_db),
-    limit: int = 100,
-    skip: int = 0):
+        db: AsyncSession = Depends(get_db),
+        limit: int = 100,
+        skip: int = 0):
     return await user_queries.get_all(db=db, limit=limit, skip=skip)
 
 
 @router.post("", response_model=UserSchema)
 async def create_user(user: UserInSchema, db: AsyncSession = Depends(get_db)):
     user = await user_queries.create(db=db, user_schema=user)
-    return UserSchema.from_orm(user)
+    return user
 
 
 @router.put("", response_model=UserSchema)
 async def update_user(
-    id: int,
-    user: UserUpdateSchema,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)):
-
-    old_user = await user_queries.get_by_id(db=db, id=id)
+        user: UserUpdateSchema,
+        db: AsyncSession = Depends(get_db),
+        current_user: User = Depends(get_current_user)):
+    old_user = await user_queries.get_by_id(db=db, user_id=current_user.id)
 
     if old_user is None or old_user.email != current_user.email:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден")
@@ -42,4 +40,13 @@ async def update_user(
 
     new_user = await user_queries.update(db=db, user=old_user)
 
-    return UserSchema.from_orm(new_user)
+    return new_user
+
+
+@router.get("/{user_id}/responses", response_model=List[ResponseSchema])
+async def get_responses(
+        user_id: int,
+        db: AsyncSession = Depends(get_db),
+        current_user: User = Depends(get_current_user)):
+    responses = await get_all_accessible_response_of_user(db, user_id, current_user)
+    return responses

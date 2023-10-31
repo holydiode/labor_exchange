@@ -8,14 +8,14 @@ from core.security import hash_password
 
 async def get_all(db: AsyncSession, limit: int = 100, skip: int = 0) -> List[User]:
     query = select(User).limit(limit).offset(skip)
-    res = await db.execute(query)
-    return res.scalars().all()
+    user_list = await db.scalars(query)
+    return user_list.all()
 
 
-async def get_by_id(db: AsyncSession, id: int) -> Optional[User]:
-    query = select(User).where(User.id == id).limit(1)
-    res = await db.execute(query)
-    return res.scalars().first()
+async def get_by_id(db: AsyncSession, user_id: int) -> Optional[User]:
+    query = select(User).where(User.id == user_id).limit(1)
+    user = await db.scalar(query)
+    return user
 
 
 async def create(db: AsyncSession, user_schema: UserInSchema) -> User:
@@ -40,6 +40,5 @@ async def update(db: AsyncSession, user: User) -> User:
 
 async def get_by_email(db: AsyncSession, email: str) -> User:
     query = select(User).where(User.email == email).limit(1)
-    res = await db.execute(query)
-    user = res.scalars().first()
+    user = await db.scalar(query)
     return user
