@@ -120,8 +120,8 @@ async def test_read_responses_by_user(client_app: AsyncClient, user_access_token
     )
 
     assert response.status_code == 200
-    assert response.json()["user_id"] == user.id
-    assert response.json()["job_id"] == added_job.id
+    assert response.json()[0]["user_id"] == user.id
+    assert response.json()[0]["job_id"] == added_job.id
 
 
 @pytest.mark.asyncio

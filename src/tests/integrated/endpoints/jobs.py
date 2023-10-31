@@ -78,7 +78,7 @@ async def test_response_jobby_user(client_app: AsyncClient, user_access_token: s
 
     assert response.status_code == 200
     assert response.json()["user_id"] == user.id
-    assert response.json()["job_id"] == user.id
+    assert response.json()["job_id"] == added_job.id
 
 
 @pytest.mark.asyncio
