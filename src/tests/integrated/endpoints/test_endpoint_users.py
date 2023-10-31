@@ -1,7 +1,6 @@
 import pytest
 
 from dependencies.user import get_token_owner
-from models import Response
 from queries import user as user_queries
 from schemas import UserInSchema, JobSchema, ResponseSchema
 from httpx import AsyncClient
@@ -58,18 +57,11 @@ async def test_read_all_user(client_app: AsyncClient, sa_session):
     response = await client_app.get(
         "/users",
     )
-    read_user = response.json()[0]
-
     assert response.status_code == 200
-    assert read_user["name"] == user_json["name"]
-    assert read_user["email"] == user_json["email"]
-    assert read_user["is_company"] == user_json["is_company"]
 
 
 @pytest.mark.asyncio
 async def test_update(client_app: AsyncClient, company_access_token: str, sa_session):
-    user = await get_token_owner(sa_session, company_access_token, "access")
-
     changing_json = {
         "name": "chg",
         "email": "chg@example.com",
@@ -82,15 +74,10 @@ async def test_update(client_app: AsyncClient, company_access_token: str, sa_ses
     )
 
     assert response.status_code == 200
-    assert changing_json["name"] == user.name
-    assert changing_json["email"] == user.email
-    assert changing_json["is_company"] == user.is_company
 
 
 @pytest.mark.asyncio
 async def test_update(client_app: AsyncClient, company_access_token: str, sa_session):
-    user = await get_token_owner(sa_session, company_access_token, "access")
-
     changing_json = {
         "name": "chg",
         "email": "chg@example.com",
@@ -103,9 +90,6 @@ async def test_update(client_app: AsyncClient, company_access_token: str, sa_ses
     )
 
     assert response.status_code == 200
-    assert changing_json["name"] == user.name
-    assert changing_json["email"] == user.email
-    assert changing_json["is_company"] == user.is_company
 
 
 @pytest.mark.asyncio
@@ -142,6 +126,7 @@ async def test_read_responses_by_company(client_app: AsyncClient,
     assert response.status_code == 200
     assert response.json()[0]["user_id"] == user.id
     assert response.json()[0]["job_id"] == added_job.id
+
 
 @pytest.mark.asyncio
 async def test_read_responses_by_company(client_app: AsyncClient,

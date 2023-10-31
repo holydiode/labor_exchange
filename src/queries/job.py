@@ -1,7 +1,7 @@
 from typing import List
 
 from sqlalchemy import select
-from sqlalchemy_mock import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 from models import Job
 from schemas.job import JobSchema
 
@@ -24,13 +24,11 @@ async def create(db: AsyncSession, job_schema: JobSchema):
 
 async def get_all(db: AsyncSession, limit: int = 100, skip: int = 0) -> List[Job]:
     request = select(Job).limit(limit).offset(skip)
-    result = await db.execute(request)
-    list_of_jobs = result.scalars().all()
-    return list_of_jobs
+    list_of_jobs = await db.scalars(request)
+    return list_of_jobs.all()
 
 
 async def get_by_id(db: AsyncSession, job_id: int) -> JobSchema:
     request = select(Job).where(Job.id == job_id)
-    result = await db.execute(request)
-    job = result.scalars().first()
+    job = await db.scalar(request)
     return job

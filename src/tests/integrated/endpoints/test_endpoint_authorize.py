@@ -3,6 +3,7 @@ from queries import user as user_queries
 from schemas import UserInSchema
 from httpx import AsyncClient
 
+
 @pytest.mark.asyncio
 async def test_wrong_authorize(client_app: AsyncClient):
     response = await client_app.post(
@@ -13,6 +14,7 @@ async def test_wrong_authorize(client_app: AsyncClient):
         }
     )
     assert response.status_code == 401
+
 
 @pytest.mark.asyncio
 async def test_refresh_token(client_app: AsyncClient, user_refresh_token: str):
@@ -25,6 +27,7 @@ async def test_refresh_token(client_app: AsyncClient, user_refresh_token: str):
     assert "access_token" in response.json()
     assert "refresh_token" in response.json()
 
+
 @pytest.mark.asyncio
 async def test_refresh_token_by_access_token(client_app: AsyncClient, user_access_token: str):
     response = await client_app.post(
@@ -32,6 +35,7 @@ async def test_refresh_token_by_access_token(client_app: AsyncClient, user_acces
         headers={"Authorization": f"Bearer {user_access_token}"}
     )
     assert response.status_code == 401
+
 
 @pytest.mark.asyncio
 async def test_correct_login(client_app: AsyncClient, sa_session):

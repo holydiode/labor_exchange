@@ -1,6 +1,7 @@
 import datetime
 from typing import Optional
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
+from pydantic_core.core_schema import FieldValidationInfo
 
 
 class JobSchema(BaseModel):
@@ -26,10 +27,9 @@ class JobInputSchema(BaseModel):
     salary_to: Optional[int] = Field(default=None, description="Максимальная заработная плата")
     is_active: bool = Field(default=True, description="Существует ли вакансия сейчас")
 
-    @classmethod
-    @validator("salary_to")
-    def password_match(cls, v, values, **kwargs):
-        salary_from = values['salary_from']
-        if v is not None and salary_from is not None and v < values['salary_from']:
+    @field_validator("salary_to")
+    def password_match(cls, v: str, info: FieldValidationInfo):
+        salary_from = info.data['salary_from']
+        if v is not None and salary_from is not None and v < info.data['salary_from']:
             raise ValueError("Максимальная зарплата не может быть меньше минимальной")
-        return True
+        return v

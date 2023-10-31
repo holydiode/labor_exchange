@@ -1,6 +1,8 @@
 import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, validator, constr
+
+from pydantic import BaseModel, EmailStr, constr, field_validator
+from pydantic_core.core_schema import FieldValidationInfo
 
 
 class UserSchema(BaseModel):
@@ -28,8 +30,8 @@ class UserInSchema(BaseModel):
     password2: str
     is_company: bool = False
 
-    @validator("password2")
-    def password_match(cls, v, values, **kwargs):
-        if 'password' in values and v != values["password"]:
+    @field_validator("password2")
+    def password_match(cls, v: str, info: FieldValidationInfo):
+        if 'password' in info.data and v != info.data["password"]:
             raise ValueError("Пароли не совпадают!")
-        return True
+        return v

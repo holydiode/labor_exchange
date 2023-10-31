@@ -1,13 +1,12 @@
 import asyncio
 
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import sessionmaker
 
 from core import TokenGenerator
 from dependencies import get_db
 from fixtures.users import UserFactory
-from fastapi.testclient import TestClient
 from main import app
 import pytest_asyncio
 from unittest.mock import MagicMock
@@ -48,6 +47,7 @@ async def client_app(sa_session: AsyncSession) -> AsyncClient:
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
 
+
 @pytest_asyncio.fixture(autouse=True)
 def setup_factories(sa_session: AsyncSession) -> None:
     UserFactory.session = sa_session
@@ -65,6 +65,8 @@ async def user_access_token(sa_session) -> str:
     await user_queries.create(sa_session, UserInSchema(**user_json))
 
     return TokenGenerator.create_access_token({"sub": user_json["email"]}).token
+
+
 @pytest_asyncio.fixture()
 async def company_access_token(sa_session) -> str:
     user_json = {
@@ -77,6 +79,8 @@ async def company_access_token(sa_session) -> str:
     await user_queries.create(sa_session, UserInSchema(**user_json))
 
     return TokenGenerator.create_access_token({"sub": user_json["email"]}).token
+
+
 @pytest_asyncio.fixture()
 async def user_refresh_token(sa_session) -> str:
     user_json = {
@@ -89,4 +93,3 @@ async def user_refresh_token(sa_session) -> str:
     await user_queries.create(sa_session, UserInSchema(**user_json))
 
     return TokenGenerator.create_refresh_token({"sub": user_json["email"]}).token
-

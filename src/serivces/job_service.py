@@ -13,5 +13,5 @@ async def create_job_by_user(db: AsyncSession, job: JobInputSchema, current_user
     if not current_user.is_company:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="user can't create job")
 
-    new_job = JobSchema(**job.dict(), user_id=current_user.id, created_at=datetime.utcnow())
+    new_job = JobSchema(**job.model_dump(), user_id=current_user.id, created_at=datetime.utcnow())
     return await job_query.create(db=db, job_schema=new_job)

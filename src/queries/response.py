@@ -20,6 +20,5 @@ async def create(db: AsyncSession, response: ResponseSchema) -> Response:
 
 async def get_by_user_id(db: AsyncSession, user_id: int) -> List[Response]:
     request = select(Response).where(Response.user_id == user_id)
-    result = await db.execute(request)
-    list_of_responses = result.scalars().all()
-    return list_of_responses
+    list_of_responses = await db.scalars(request)
+    return list_of_responses.all()
